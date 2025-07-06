@@ -1,1 +1,1 @@
-# Celest-e-commerce
+# Celeste-e-commerce
