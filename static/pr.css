@@ -1,0 +1,125 @@
+body {
+  margin: 0;
+  font-family: 'Playfair Display', serif;
+  background-color: #fcf8f7;
+  color: #18392B;
+  letter-spacing: 0.02em;
+}
+
+.container {
+  min-height: 100vh;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-wrapper {
+  max-width: 700px;
+  width: 100%;
+  padding: 24px;
+  border: 2px solid #18392B;
+  border-radius: 16px;
+  background-color: #ffffff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.profile-header h1 {
+  font-size: 2.4rem;
+  font-weight: bold;
+  margin: 0;
+  color: #18392B;
+}
+
+.edit-btn {
+  background: none;
+  border: none;
+  color: #18392B;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.edit-btn:hover {
+  color: #0f1e15;
+}
+
+.profile-card {
+  background-color: white;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.profile-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 12px;
+}
+
+.label {
+  font-weight: 500;
+  color: #374151;
+  flex: 1;
+}
+
+.value {
+  color: #111827;
+  flex: 2;
+  text-align: right;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="date"] {
+  flex: 2;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  text-align: right;
+  color: #111827;
+  background-color: #f9fafb;
+  font-family: 'Playfair Display', serif;
+}
+
+.hidden {
+  display: none;
+}
+
+.banner {
+  width: 100%;
+  background-color: #18392B;
+  padding: 12px 24px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+}
+
+.brand-name {
+  font-family: 'Allura', cursive;
+  font-size: 2em;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+}
+
+.brand-logo {
+  height: 40px;
+  object-fit: contain;
+}
+
