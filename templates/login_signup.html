@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Register form</title>
+
+    <!--Boxicons CDN-->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <!--Custom CSS-->
+    <!-- <link rel="stylesheet" href="login_signup_style.css"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='login_signup_style.css') }}">
+
+
+</head>
+<body>
+    
+    <div class="wrapper">
+
+        <span class="rotate-bg"></span>
+        <span class="rotate-bg2"></span>
+
+        <div class="form-box login">
+
+            <h2 class="title animation" style="--i:0; --j:21">Login</h2>
+
+            <form action="/login" method="POST">
+
+
+                <div class="input-box animation" style="--i:1; --j:22">
+                    <input type="email" name="email" required>
+                    <label for="">Email</label>
+                    <i class='bx bxs-user'></i>
+                </div>
+
+                <div class="input-box animation" style="--i:2; --j:23">
+                    <input type="password" name="password" required>
+                    <label for="">Password</label>
+                    <i class='bx bxs-lock-alt' ></i>
+                </div>
+                
+
+                <button type="submit" class="btn animation" style="--i:3; --j:24">Login</button>
+
+                <div class="linkTxt animation" style="--i:5; --j:25">
+                    <p>Don't have an account? <a href="#" class="register-link">Sign Up</a></p>
+                </div>
+                
+                <div class="forgot-password animation" style="--i:4; --j:26">
+                    <a href="#" onclick="openPopup()">Forgot Password?</a>
+
+                </div>
+                
+            
+
+                
+            </form>
+        </div>
+
+        <div class="info-text login">
+            <h2 class="animation" style="--i:0; --j:20"><em>Welcome Back!</em></h2>
+            <p class="animation" style="--i:1; --j:21"><em>Discover the elegance you deserve</em></p>
+        </div>
+
+
+
+
+
+
+
+        <div class="form-box register">
+
+            <h2 class="title animation" style="--i:17; --j:0">Sign Up</h2>
+
+            <form action="/signup" method="POST">
+
+                <div class="scroll-box animation" style="--i:18; --j:1">
+                    <!-- <div class="input-box">
+                        <input type="text" name="name" required>
+                        <label>Name</label>
+                        <i class='bx bxs-user'></i>
+                    </div> -->
+                    <div class="input-box">
+                        <input type="text" name="username" required>
+                        <label>Username</label>
+                        <i class='bx bxs-user'></i>
+                    </div>
+            
+                    <div class="input-box">
+                        <input type="email" name="email" required>
+                        <label>Email</label>
+                        <i class='bx bxs-envelope'></i>
+                    </div>
+            
+                    <div class="input-box">
+                        <input type="password" name="password" required>
+                        <label>Password</label>
+                        <i class='bx bxs-lock-alt'></i>
+                    </div>
+
+                    <div class="input-box">
+                        <input type="text" name="address" required>
+                        <label>Address</label>
+                        <i class='bx bxs-map'></i>
+                    </div>
+            
+                    <div class="input-box">
+                        <input type="text" name="gender" required>
+                        <label>Gender</label>
+                        <i class='bx bxs-user-detail'></i>
+                    </div>
+            
+                    <div class="input-box">
+                        <input type="date" name="dob" required>
+                        <label style="top: -5px;">Date of Birth</label>
+                        <i class='bx bxs-calendar'></i>
+                    </div>
+            
+                    <div class="input-box">
+                        <input type="tel" name="mobile" required pattern="[0-9]{10}">
+                        <label>Mobile Number</label>
+                        <i class='bx bxs-phone'></i>
+                    </div>
+            
+                   
+                </div>
+            
+                <button type="submit" class="btn animation" style="--i:21;--j:4">Sign Up</button>
+            
+                <div class="linkTxt animation" style="--i:22; --j:5">
+                    <p>Already have an account? <a href="#" class="login-link">Login</a></p>
+                </div>
+            </form>
+            
+        </div>
+
+
+        <div class="info-text register">
+            <h2 class="animation" style="--i:17; --j:0;"><em>Experience Excellence!</em></h2>
+            <p class="animation" style="--i:18; --j:1;"><em>Because you deserve nothing but the finest.</em></p>
+        </div>
+
+        <div class="popup-container" id="forgotPopup">
+            <div class="popup-box">
+                <h2>Reset Password</h2>
+                <p>Enter your registered email to receive reset instructions.</p>
+                <input type="email" id="resetEmail" placeholder="Enter your email" required>
+                <div class="popup-actions">
+                    <button onclick="sendResetLink()">Send</button>
+                    <button onclick="closePopup()">Cancel</button>
+                </div>
+            </div>
+        </div>
+        
+
+    </div>
+
+    <!--Script.js-->
+    <!-- <script src="login_signup.js"></script> -->
+    <script src="{{ url_for('static', filename='login_signup.js') }}"></script>
+
+</body>
+</html>

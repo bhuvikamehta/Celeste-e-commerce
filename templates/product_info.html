@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Watch Product Page</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fcf8f7;
+      margin: 40px;
+    }
+
+    .product-container {
+      display: flex;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .product-image {
+      width: 40%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .product-image img {
+      width: 230px;
+    }
+
+    .product-details {
+      width: 60%;
+      padding-left: 40px;
+    }
+
+    .product-details h1 {
+      font-size: 26px;
+      color: #18392b;
+      margin-bottom: 8px;
+    }
+
+    .product-details .brand {
+      color: #0077cc;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .product-details .price {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #111;
+    }
+
+    .product-details .description {
+      font-size: 14px;
+      margin-bottom: 24px;
+      line-height: 1.6;
+      color: #444;
+    }
+
+    .add-to-cart {
+      padding: 10px 24px;
+      background-color: #3bb4a6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .added-message {
+      margin-top: 12px;
+      color: green;
+      font-size: 14px;
+      display: none;
+    }
+
+    .review-section {
+      background: #ffffff;
+      padding: 0 0 30px 0;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      max-width: 1000px;
+      margin: 30px auto 0;
+    }
+
+    .review-header {
+      background-color: #18392b;
+      color: white;
+      padding: 15px 30px;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
+
+    .review-header h2 {
+      font-size: 20px;
+      margin: 0;
+    }
+
+    .review-content {
+      padding: 0 30px;
+    }
+
+    .review {
+      border-top: 1px solid #eee;
+      padding: 15px 0;
+    }
+
+    .review:first-child {
+      border-top: none;
+    }
+
+    .review .stars {
+      color: #f5a623;
+      margin-bottom: 5px;
+    }
+
+    .review .comment {
+      font-size: 14px;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="product-container">
+    <div class="product-image">
+      <img src="/static/watch3.jpg" alt="{{ data['Product_Name']}}">
+    </div>
+
+    <div class="product-details">
+      <h1>{{ data['Product_Name'] }}</h1>
+      <div class="brand">{{data['Brand_Name']}}</div>
+      <div class="price">Rs {{data['Price']}}</div>
+      <div class ="gender">Gender: {{data['Gender']}}</div>
+      <div class ="size"> Size: {{data['Size']}}</div>
+      <div class="description">
+        {{ data['Description'] }}
+      </div>
+      <form action="{{ url_for('add_to_cart') }}" method="POST">
+        <input type="hidden" name="product_id" value="{{ data['Product_ID'] }}">
+        <button class="add-to-cart" type="submit">Add to Cart</button>
+      </form>
+      <!-- <button class="add-to-cart" onclick="showAddedMessage()">Add to Cart</button> -->
+      <div class="added-message" id="addedMsg">✔ Added to cart!</div>
+    </div>
+  </div>
+
+  <div class="review-section">
+    <div class="review-header">
+      <h2>Customer Reviews</h2>
+    </div>
+      <div class="review">
+        {% for rev in reviews %}
+        {% if rev['Rating'] == 1 %}
+        <div class="stars">★☆☆☆☆</div>
+        {% elif rev['Rating'] == 2 %}
+        <div class="stars">★★☆☆☆</div>
+        {% elif rev['Rating'] == 3 %}
+        <div class="stars">★★★☆☆</div>
+        {% elif rev['Rating'] == 4 %}
+        <div class="stars">★★★★☆</div>
+        {% elif rev['Rating'] == 5 %}
+        <div class="stars">★★★★★</div>
+        {% endif %}
+       
+        <div class="comment">{{ rev['Comment'] }}</div>
+        {% endfor %}
+      
+       
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAddedMessage() {
+      const msg = document.getElementById('addedMsg');
+      msg.style.display = 'block';
+      setTimeout(() => {
+        msg.style.display = 'none';
+      }, 2500);
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cart</title>
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='checkout.css') }}" />
+  <style>
+    .qty-input {
+      width: 60px;
+      padding: 6px;
+      text-align: center;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .item-total {
+      font-weight: bold;
+    }
+    .total-section {
+      text-align: right;
+      font-weight: bold;
+      margin-top: 10px;
+      font-size: 18px;
+      color: #9D5A4D;
+    }
+  </style>
+</head>
+<body>
+  <div class="header-banner">
+    <h1>Cart</h1>
+  </div>
+
+  <div class="container">
+    <p>Items: <span id="item-count"></span></p>
+
+    <div class="item-list">
+      <div class="item-card">
+        <div class="item-info">
+          <h3>Unisex Black & Green Reflex 2.0 Smart Band</h3>
+          <p>Quantity: <input type="number" class="qty-input" value="1" min="0" data-price="1999" onchange="updateTotals()"></p>
+          <p>Amount: Rs <span class="item-total">1999</span></p>
+        </div>
+      </div>
+
+      <div class="item-card">
+        <div class="item-info">
+          <h3>Designer Perfume</h3>
+          <p>Quantity: <input type="number" class="qty-input" value="1" min="0" data-price="1500" onchange="updateTotals()"></p>
+          <p>Amount: Rs <span class="item-total">1500</span></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="total-card">
+      <h2>Total Amount</h2>
+      <p>Amount: Rs <span id="total-amount">3499</span></p>
+      <a href="{{ url_for('pay') }}">
+        <button class="place-order">Place Order</button>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    function updateTotals() {
+      const qtyInputs = document.querySelectorAll(".qty-input");
+      const itemTotals = document.querySelectorAll(".item-total");
+      let totalAmount = 0;
+      let itemCount = 0;
+
+      qtyInputs.forEach((input, index) => {
+        const qty = parseInt(input.value);
+        const price = parseInt(input.getAttribute("data-price"));
+        const itemTotal = qty * price;
+
+        itemTotals[index].textContent = itemTotal;
+        totalAmount += itemTotal;
+        itemCount += qty;
+      });
+
+      document.getElementById("total-amount").textContent = totalAmount;
+      document.getElementById("item-count").textContent = itemCount;
+    }
+
+    window.onload = updateTotals;
+  </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cart</title>
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='checkout.css') }}" />
+  <style>
+    .qty-input {
+      width: 60px;
+      padding: 6px;
+      text-align: center;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .item-total {
+      font-weight: bold;
+    }
+    .total-section {
+      text-align: right;
+      font-weight: bold;
+      margin-top: 10px;
+      font-size: 18px;
+      color: #9D5A4D;
+    }
+  </style>
+</head>
+<body>
+  <div class="header-banner">
+    <h1>Cart</h1>
+  </div>
+
+  <div class="container">
+    <p>Items: <span id="item-count"></span></p>
+
+    <div class="item-list">
+      <!-- Loop through cart_items from your Flask route -->
+      {% for item in cart_items %}
+      <div class="item-card">
+        <div class="item-info">
+          <!-- If your query joins the Product table, you can show item['Product_Name'] -->
+          <h3>{{ item['Product_Name'] if 'Product_Name' in item else 'Product '+item['Product_ID']|string }}</h3>
+          <p>Quantity:
+            <input type="number" class="qty-input"
+              value="{{ item['Quantity'] }}"
+              min="1"
+              data-price="{{ item['Price'] }}"
+              data-product-id="{{ item['Product_ID'] }}"
+              onchange="updateTotals(); updateQuantity(this);">
+
+          </p>
+          <p>Amount: Rs <span class="item-total">{{ item['Price'] }}</span></p>
+          <!-- {total+=item['Price']*item['Quantity']} -->
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="total-card">
+      <h2>Total Amount</h2>
+      <p>Amount: Rs <span id="total-amount">0</span></p>
+      <a href="{{ url_for('pay') }}">
+        <button class="place-order">Place Order</button>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    function updateTotals() {
+      const qtyInputs = document.querySelectorAll(".qty-input");
+      const itemTotals = document.querySelectorAll(".item-total");
+      let totalAmount = 0;
+      let itemCount = 0;
+
+      qtyInputs.forEach((input, index) => {
+        const qty = parseInt(input.value);
+        const price = parseFloat(input.getAttribute("data-price")) || 0;
+        const itemTotal = qty * price;
+
+        itemTotals[index].textContent = itemTotal;
+        totalAmount += itemTotal;
+        itemCount += qty;
+      });
+
+      document.getElementById("total-amount").textContent = totalAmount;
+      document.getElementById("item-count").textContent = itemCount;
+    }
+
+    window.onload = updateTotals;
+
+    function updateQuantity(input) {
+    const productId = input.getAttribute("data-product-id");
+    const quantity = parseInt(input.value);
+
+    fetch("/update_cart_quantity", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ product_id: productId, quantity: quantity })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (!data.success) {
+        alert("Failed to update cart.");
+      }
+    })
+    .catch(err => {
+      console.error("Error updating cart:", err);
+      alert("Error updating cart.");
+    });
+  }
+  </script>
+</body>
+</html>

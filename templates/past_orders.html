@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Orders</title>
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='p_order.css') }}" />
+  <style>
+    .review-section {
+      margin-top: 10px;
+      padding: 10px;
+      background-color: #f4f0ed;
+      border-radius: 10px;
+      display: none;
+    }
+    .review-section label {
+      font-weight: bold;
+      display: block;
+      margin-top: 5px;
+    }
+    .review-section select,
+    .review-section textarea {
+      width: 100%;
+      margin-top: 5px;
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-family: 'Playfair Display', serif;
+    }
+    .review-section .submit-review {
+      margin-top: 10px;
+      padding: 8px 14px;
+      background-color: #18392B;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .review-section .submit-review:hover {
+      background-color: #0f241c;
+    }
+    .review-confirmation {
+      display: none;
+      margin-top: 8px;
+      color: green;
+      font-weight: bold;
+    }
+    .add-review-btn {
+      margin-top: 8px;
+      background-color: #18392B;
+      color: white;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .add-review-btn:hover {
+      background-color: #0f241c;
+    }
+  </style>
+  <script>
+    function toggleReview(id) {
+      const section = document.getElementById('review-' + id);
+      section.style.display = section.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function submitReview(id) {
+      const section = document.getElementById('review-' + id);
+      const confirm = document.getElementById('confirm-' + id);
+      section.style.display = 'none';
+      confirm.style.display = 'block';
+    }
+  </script>
+</head>
+<body>
+  <div class="header-banner">
+    <h1>My Past Orders</h1>
+  </div>
+  
+  <div class="container">
+    <p>Total Orders: {{ orders|length }}</p>
+    <div class="item-list">
+      {% for order in orders %}
+
+      <div class="item-card">
+        <div class="item-info">
+          <h3>Order #{{ order['Order_ID'] }}</h3>
+          <p class="order-status">Status: {{ order['Order_Status'] }}</p>
+          <p class="order-id">Date: {{ order['Date_of_Ordering'].strftime('%B %d, %Y') }}</p>
+        </div>
+
+        <div class="order-items">
+          <h4>Items:</h4>
+          {% for item in order['items'] %}
+          <div class="product">
+            <p><strong>{{ item['Product_Name'] }}</strong></p>
+            <p>Quantity: {{ item['Quantity'] }} | Rs {{ item['Price'] }}</p>
+
+            <!-- Add Review Button -->
+            <button class="add-review-btn" onclick="toggleReview({{ item['Product_ID'] }})">Add Review</button>
+
+            <!-- Hidden Review Form -->
+            <div class="review-section" id="review-{{ item['Product_ID'] }}">
+              <form action="{{ url_for('submit_review') }}" method="POST">
+                <input type="hidden" name="product_id" value="{{ item['Product_ID'] }}">
+                <input type="hidden" name="order_id" value="{{ order['Order_ID'] }}">
+
+                <label for="rating-{{ item['Product_ID'] }}">Rating (1-5):</label>
+                <select name="rating" id="rating-{{ item['Product_ID'] }}" required>
+                  <option value="">Select</option>
+                  <option value="5">5</option>
+                  <option value="4">4</option>
+                  <option value="3">3</option>
+                  <option value="2">2</option>
+                  <option value="1">1</option>
+                </select>
+
+                <label for="comment-{{ item['Product_ID'] }}">Review:</label>
+                <textarea name="comment" id="comment-{{ item['Product_ID'] }}" rows="2" placeholder="Leave your comment..." required></textarea>
+
+                <button class="submit-review" type="submit">Submit Review</button>
+              </form>
+            </div>
+            {% if request.args.get('review') == 'success' and request.args.get('order_id') == order['Order_ID']|string %}
+              <p style="color: green; font-weight: bold; margin-top: 10px;">Review submitted!</p>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        <p class="order-total">Total: Rs {{ order['Grand_Total'] }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</body>
+</html>

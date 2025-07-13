@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Allura&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Listing - Celesté</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f6f4f1;
+    }
+
+    .navbar {
+      background-color: #18392b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar .logo {
+      font-size: 24px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+    }
+
+    .logo-text {
+      color: white;
+      margin-right: 10px;
+      font-family: 'Allura', cursive;
+      font-size: 28px;
+    }
+
+    .products-container {
+      padding: 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .sort-section {
+      margin-bottom: 20px;
+    }
+
+    select {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .product {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      transition: transform 0.2s;
+    }
+
+    .product:hover {
+      transform: translateY(-5px);
+    }
+
+    .product img {
+      width: 200px;
+      height: auto;
+    }
+
+    .product-name {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+
+    .product-price {
+      color: #666;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="logo">
+      <span class="logo-text">Celesté</span>
+      <img src="/static/logo2-Photoroom.png" alt="Celesté Logo" style="height: 40px;" />
+    </div>
+  </div>
+
+  <div class="products-container">
+    <div class="sort-section">
+      <form method="get" action="{{ url_for('show_prod', category=category) }}">
+        <label for="sort">Sort by:</label>
+        <select name="sort" id="sort" onchange="this.form.submit()">
+          <option disabled selected>Select option</option>
+          <option value="Gender - Male" {% if request.args.get('sort') == 'Gender - Male' %}selected{% endif %}>Gender - Male</option>
+          <option value="Gender - Female" {% if request.args.get('sort') == 'Gender - Female' %}selected{% endif %}>Gender - Female</option>
+          <option value="Price - Low to High" {% if request.args.get('sort') == 'Price - Low to High' %}selected{% endif %}>Price - Low to High</option>
+          <option value="Price - High to Low" {% if request.args.get('sort') == 'Price - High to Low' %}selected{% endif %}>Price - High to Low</option>
+          <option value="Color - Blue" {% if request.args.get('sort') == 'Color - Blue' %}selected{% endif %}>Color - Blue</option>
+          <option value="Color - Black" {% if request.args.get('sort') == 'Color - Black' %}selected{% endif %}>Color - Black</option>
+          <option value="Color - Red" {% if request.args.get('sort') == 'Color - Red' %}selected{% endif %}>Color - Red</option>
+          <option value="Color - Pink" {% if request.args.get('sort') == 'Color - Pink' %}selected{% endif %}>Color - Pink</option>
+          <option value="Promotion Applied - Yes" {% if request.args.get('sort') == 'Promotion Applied - Yes' %}selected{% endif %}>Promotion Applied - Yes</option>
+          <option value="Promotion Applied - No" {% if request.args.get('sort') == 'Promotion Applied - No' %}selected{% endif %}>Promotion Applied - No</option>
+        </select>
+      </form>
+    </div>
+
+    <div class="product-grid">
+      {% if data %}
+        {% for product in data %}
+        <div class="product">
+          <a href="{{ url_for('product_info', product_id=product['Product_ID']) }}">
+            <img src="/static/watch3.jpg" alt="{{ product['Product_Name'] }}" />
+            <div class="product-name">{{ product['Product_Name'] }}</div>
+            <div class="product-price">₹{{ product['Price'] }}</div>
+          </a>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p>No products found.</p>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>

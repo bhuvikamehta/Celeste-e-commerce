@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celesté - Landing</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='landing_style.css') }}">
+</head>
+<body>
+<!-- 
+    <div class="brand-top">Celesté</div> -->
+    <div class="container">
+        <div class="left-panel">
+            <h1 class="brand"><em>Celesté</em></h1>
+            <h1>Your Signature<br>Look Starts Here.</h1>
+            <p>Watches, Handbags and Shades that<br>do the talking!</p>
+            <a href="{{ url_for('login') }}" class="explore-button">Explore Now!</a>
+            <br>
+            <a href="{{ url_for('admin') }}" class="explore-button">Sign in as Admin</a>
+        </div>
+        <div class="right-panel">
+            <div class="slider">
+                <img src="{{ url_for('static', filename='watch1.jpg') }}" class="slide active" alt="Watch 1">
+
+                <img src="{{ url_for('static', filename='sunglasses1.jpg') }}" class="slide active" alt="sunglasses 1">
+
+                <img src="{{ url_for('static', filename='bag1.jpg') }}" class="slide active" alt="bag 1">
+            </div>
+            <div class="dots">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='landing_script.js') }}"></script>
+</body>
+</html>

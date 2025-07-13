@@ -1,0 +1,918 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      background-color: #fcf8f7;
+      font-family: 'Playfair Display', serif;
+    }
+    .top-bar {
+      background-color: #18392B;
+      color: white;
+      padding: 1rem 2rem;
+      font-size: 1.5rem;
+    }
+    .container {
+      padding: 2rem;
+    }
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    button {
+      background-color: #18392B;
+      color: white;
+      border: none;
+      padding: 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #2e5a43;
+    }
+    .output {
+      margin-top: 2rem;
+      padding: 1rem;
+      background-color: #fff;
+      border-radius: 10px;
+      min-height: 100px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .output input,
+    .output select {
+      margin: 5px 0;
+      padding: 5px;
+      font-family: monospace;
+      width: 100%;
+    }
+    
+    /* Keeping the rest of the original styles */
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    
+    label {
+      font-weight: 500;
+    }
+    
+    .success-msg {
+      background-color: #d4edda;
+      color: #155724;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+    
+    .error-msg {
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+    
+    .data-table {
+      width: 100%;
+      margin-top: 20px;
+    }
+    
+    .data-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .data-table th, .data-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .data-table th {
+      background-color: #f2f2f2;
+    }
+    
+    .sales-amount {
+      font-size: 24px;
+      font-weight: bold;
+      color: #28a745;
+    }
+    
+    ul {
+      padding-left: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">Admin Dashboard</div>
+  <div class="container">
+    <div class="btn-grid">
+      <button onclick="runQuery('add')">Add New Product</button>
+      <button onclick="runQuery('delete')">Delete Product</button>
+      <button onclick="runQuery('update')">Update Product</button>
+      <button onclick="runQuery('supplier')">View Supplier by Category</button>
+      <button onclick="runQuery('sales_day')">Total Sales (Day)</button>
+      <button onclick="runQuery('sales_week')">Total Sales (Week)</button>
+      <button onclick="runQuery('top_products')">Top 5 Products (Week)</button>
+      <button onclick="runQuery('update_status')">Update Order Status</button>
+      <button onclick="runQuery('top_rated')">Top 5 Rated Products</button>
+      <button onclick="runQuery('low_rated')">Lowest 5 Rated Products</button>
+      <button onclick="runQuery('membership')">Check Customer Membership</button>
+    </div>
+
+    <div class="output" id="output">
+      <!-- Dynamic input & output here -->
+      <p>Select an operation from the buttons above.</p>
+    </div>
+  </div>
+
+  <script>
+    function createInput(label, id, type = "text") {
+      return `<label>${label}:<br><input type="${type}" id="${id}" /></label><br>`;
+    }
+
+    function createButton(label, handler) {
+      return `<button onclick="${handler}">${label}</button>`;
+    }
+
+    function formatCurrency(amount) {
+      if (amount === null || amount === undefined) return "₹0.00";
+      return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 2
+      }).format(amount);
+    }
+
+    function formatRating(rating) {
+      // Handle different data types safely
+      if (rating === null || rating === undefined) return "N/A";
+      
+      // Check if it's a number or can be converted to a number
+      const numRating = parseFloat(rating);
+      if (isNaN(numRating)) return rating; // Return original if not a number
+      
+      // Format to 1 decimal place if it's a number
+      return numRating.toFixed(1) + " ⭐";
+    }
+
+    function runQuery(type) {
+      const output = document.getElementById('output');
+      output.innerHTML = '';
+
+      switch (type) {
+        case 'add':
+          output.innerHTML = 
+            createInput("Product Name", "pname") +
+            createInput("Brand", "brand") +
+            createInput("Category", "cat") +
+            createInput("Price", "price", "number") +
+            createInput("Stock Quantity", "stock", "number") +
+            createInput("Image URL", "img") +
+            createInput("Description", "desc") +
+            createInput("Gender", "gender") +
+            createInput("Colour", "colour") +
+            createInput("Size", "size") +
+            createButton("Add Product", "submitAdd()");
+          break;
+
+        case 'delete':
+          output.innerHTML = 
+            createInput("Enter Product ID", "delid", "number") +
+            createButton("Delete Product", "submitDelete()");
+          break;
+
+        case 'update':
+          output.innerHTML =
+            createInput("Product ID", "upid", "number") +
+            createInput("New Price", "newprice", "number") +
+            createInput("New Stock Quantity", "newstock", "number") +
+            createButton("Update Product", "submitUpdate()");
+          break;
+
+        case 'supplier':
+          output.innerHTML = 
+            createInput("Enter Category", "catinput") +
+            createButton("Get Supplier", "submitSupplier()");
+          break;
+
+        case 'sales_day':
+          fetchDailySales();
+          break;
+
+        case 'sales_week':
+          fetchWeeklySales();
+          break;
+
+        case 'top_products':
+          fetchTopProducts();
+          break;
+
+          case 'update_status':
+  output.innerHTML = 
+    createInput("Enter Order ID", "oid", "number") +
+    `<label>New Order Status:<br>
+      <select id="ostatus" style="width: 100%; padding: 10px; margin: 8px 0 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+        <option value="Shipped">Shipped</option>
+        <option value="Delivered">Delivered</option>
+      </select>
+    </label><br>` +
+    createButton("Update Status", "submitStatus()");
+  break;
+
+        case 'top_rated':
+          fetchTopRatedProducts();
+          break;
+
+        case 'low_rated':
+          fetchLowestRatedProducts();
+          break;
+
+        case 'membership':
+          fetchCustomersMembership();
+          break;
+
+        default:
+          output.innerText = 'Invalid action.';
+      }
+    }
+
+    function submitAdd() {
+      const pname = document.getElementById("pname").value;
+      const brand = document.getElementById("brand").value;
+      const cat = document.getElementById("cat").value;
+      const price = document.getElementById("price").value;
+      const stock = document.getElementById("stock").value;
+      const img = document.getElementById("img").value;
+      const desc = document.getElementById("desc").value;
+      const gender = document.getElementById("gender").value;
+      const colour = document.getElementById("colour").value;
+      const size = document.getElementById("size").value;
+
+      if (!pname || !brand || !cat || !price || !stock || !gender || !colour || !size) {
+        document.getElementById("output").innerHTML = `
+          <div class="error-msg">
+            <p>Please fill in all required fields!</p>
+          </div>
+        `;
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('pname', pname);
+      formData.append('brand', brand);
+      formData.append('cat', cat);
+      formData.append('price', price);
+      formData.append('stock', stock);
+      formData.append('img', img);
+      formData.append('desc', desc);
+      formData.append('gender', gender);
+      formData.append('colour', colour);
+      formData.append('size', size);
+
+      fetch('/add_product', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Server responded with status: ' + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          document.getElementById("output").innerHTML = `
+            <div class="success-msg">
+              <p>${data.message}</p>
+              <p>Product ID: ${data.product_id}</p>
+            </div>
+          `;
+        } else {
+          document.getElementById("output").innerHTML = `
+            <div class="error-msg">
+              <p>Error: ${data.message}</p>
+            </div>
+          `;
+        }
+      })
+      .catch(error => {
+        document.getElementById("output").innerHTML = `
+          <div class="error-msg">
+            <p>Error: ${error}</p>
+          </div>
+        `;
+        console.error('Error:', error);
+      });
+    }
+
+    function submitDelete() {
+      const productId = document.getElementById("delid").value;
+      
+      if (!productId) {
+        document.getElementById("output").innerHTML = `
+          <div class="error-msg">
+            <p>Please enter a Product ID!</p>
+          </div>
+        `;
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('product_id', productId);
+
+      fetch('/delete_product', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Server responded with status: ' + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          document.getElementById("output").innerHTML = `
+            <div class="success-msg">
+              <p>${data.message}</p>
+            </div>
+          `;
+        } else {
+          document.getElementById("output").innerHTML = `
+            <div class="error-msg">
+              <p>Error: ${data.message}</p>
+            </div>
+          `;
+        }
+      })
+      .catch(error => {
+        document.getElementById("output").innerHTML = `
+          <div class="error-msg">
+            <p>Error: ${error}</p>
+          </div>
+        `;
+        console.error('Error:', error);
+      });
+    }
+
+    function submitUpdate() {
+      const productId = document.getElementById("upid").value;
+      const price = document.getElementById("newprice").value;
+      const stock = document.getElementById("newstock").value;
+      
+      if (!productId || !price || !stock) {
+        document.getElementById("output").innerHTML = `
+          <div class="error-msg">
+            <p>Please fill in all fields!</p>
+          </div>
+        `;
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('product_id', productId);
+      formData.append('price', price);
+      formData.append('stock', stock);
+
+      fetch('/update_product', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Server responded with status: ' + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          document.getElementById("output").innerHTML = `
+            <div class="success-msg">
+              <p>${data.message}</p>
+              <p>New Price: ${formatCurrency(data.new_price)}</p>
+              <p>New Stock: ${data.new_stock}</p>
+            </div>
+          `;
+        } else {
+          document.getElementById("output").innerHTML = `
+            <div class="error-msg">
+              <p>Error: ${data.message}</p>
+            </div>
+          `;
+        }
+      })
+      .catch(error => {
+        document.getElementById("output").innerHTML = `
+          <div class="error-msg">
+            <p>Error: ${error}</p>
+          </div>
+        `;
+        console.error('Error:', error);
+      });
+    }
+
+    function submitSupplier() {
+      const category = document.getElementById("catinput").value;
+      
+      if (!category) {
+        document.getElementById("output").innerHTML = `
+          <div class="error-msg">
+            <p>Please enter a category!</p>
+          </div>
+        `;
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('category', category);
+
+      fetch('/get_suppliers_by_category', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Server responded with status: ' + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          let supplierHTML = `<div class="data-table"><h3>Suppliers for ${category}:</h3><ul>`;
+          
+          data.suppliers.forEach((supplier, index) => {
+            supplierHTML += `<li>${index + 1}. ${supplier.supplier_name}</li>`;
+          });
+          
+          supplierHTML += `</ul></div>`;
+          document.getElementById("output").innerHTML = supplierHTML;
+        } else {
+          document.getElementById("output").innerHTML = `
+            <div class="error-msg">
+              <p>${data.message}</p>
+            </div>
+          `;
+        }
+      })
+      .catch(error => {
+        document.getElementById("output").innerHTML = `
+          <div class="error-msg">
+            <p>Error: ${error}</p>
+          </div>
+        `;
+        console.error('Error:', error);
+      });
+    }
+
+    function fetchDailySales() {
+      document.getElementById("output").innerHTML = "<p>Loading daily sales data...</p>";
+      
+      fetch('/get_daily_sales')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Server responded with status: ' + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          document.getElementById("output").innerHTML = `
+            <div class="data-table">
+              <h3>Total Sales for ${data.date}:</h3>
+              <p class="sales-amount">${formatCurrency(data.total_sales)}</p>
+            </div>
+          `;
+        } else {
+          document.getElementById("output").innerHTML = `
+            <div class="error-msg">
+              <p>Error: ${data.message}</p>
+            </div>
+          `;
+        }
+      })
+      .catch(error => {
+        document.getElementById("output").innerHTML = `
+          <div class="error-msg">
+            <p>Error: ${error}</p>
+          </div>
+        `;
+        console.error('Error:', error);
+      });
+    }
+
+    function fetchWeeklySales() {
+      document.getElementById("output").innerHTML = "<p>Loading weekly sales data...</p>";
+      
+      fetch('/get_weekly_sales')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Server responded with status: ' + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          document.getElementById("output").innerHTML = `
+            <div class="data-table">
+              <h3>Total Sales for ${data.date_range}:</h3>
+              <p class="sales-amount">${formatCurrency(data.total_sales)}</p>
+            </div>
+          `;
+        } else {
+          document.getElementById("output").innerHTML = `
+            <div class="error-msg">
+              <p>Error: ${data.message}</p>
+            </div>
+          `;
+        }
+      })
+      .catch(error => {
+        document.getElementById("output").innerHTML = `
+          <div class="error-msg">
+            <p>Error: ${error}</p>
+          </div>
+        `;
+        console.error('Error:', error);
+      });
+    }
+
+    function fetchTopProducts() {
+      document.getElementById("output").innerHTML = "<p>Loading top products data...</p>";
+      
+      fetch('/get_top_products')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Server responded with status: ' + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          let productsHTML = `
+            <div class="data-table">
+              <h3>Top 5 Products This Week:</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Product ID</th>
+                    <th>Product Name</th>
+                    <th>Order Count</th>
+                    <th>Total Quantity Sold</th>
+                  </tr>
+                </thead>
+                <tbody>
+          `;
+          
+          if (data.top_products.length === 0) {
+            productsHTML += `
+              <tr>
+                <td colspan="5" style="text-align: center;">No products found for this period</td>
+              </tr>
+            `;
+          } else {
+            data.top_products.forEach((product, index) => {
+              productsHTML += `
+                <tr>
+                  <td>${index + 1}</td>
+                  <td>${product.Product_ID}</td>
+                  <td>${product.Product_Name}</td>
+                  <td>${product.Order_Count}</td>
+                  <td>${product.Total_Quantity_Sold}</td>
+                </tr>
+              `;
+            });
+          }
+          
+          productsHTML += `
+                </tbody>
+              </table>
+            </div>
+          `;
+          
+          document.getElementById("output").innerHTML = productsHTML;
+        } else {
+          document.getElementById("output").innerHTML = `
+            <div class="error-msg">
+              <p>Error: ${data.message}</p>
+            </div>
+          `;
+        }
+      })
+      .catch(error => {
+        document.getElementById("output").innerHTML = `
+          <div class="error-msg">
+            <p>Error: ${error}</p>
+          </div>
+        `;
+        console.error('Error:', error);
+      });
+    }
+
+    function submitStatus() {
+  const orderId = document.getElementById("oid").value;
+  const orderStatus = document.getElementById("ostatus").value;
+  
+  if (!orderId || !orderStatus) {
+    document.getElementById("output").innerHTML = `
+      <div class="error-msg">
+        <p>Please fill in all fields!</p>
+      </div>
+    `;
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('order_id', orderId);
+  formData.append('order_status', orderStatus);
+
+  fetch('/update_order_status', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Server responded with status: ' + response.status);
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.success) {
+      let orderHTML = `
+        <div class="success-msg">
+          <p>${data.message}</p>
+        </div>
+        <div class="data-table">
+          <h3>Updated Order Details:</h3>
+          <p><strong>Order ID:</strong> ${data.order.Order_ID}</p>
+          <p><strong>Customer ID:</strong> ${data.order.Customer_ID}</p>
+          <p><strong>Grand Total:</strong> ${formatCurrency(data.order.Grand_Total)}</p>
+          <p><strong>Order Status:</strong> ${data.order.Order_Status}</p>
+        </div>
+      `;
+      
+      document.getElementById("output").innerHTML = orderHTML;
+    } else {
+      document.getElementById("output").innerHTML = `
+        <div class="error-msg">
+          <p>Error: ${data.message}</p>
+        </div>
+      `;
+    }
+  })
+  .catch(error => {
+    document.getElementById("output").innerHTML = `
+      <div class="error-msg">
+        <p>Error: ${error}</p>
+      </div>
+    `;
+    console.error('Error:', error);
+  });
+}
+
+    function fetchTopRatedProducts() {
+      document.getElementById("output").innerHTML = "<p>Loading top rated products data...</p>";
+      
+      fetch('/get_highest_rated_products')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Server responded with status: ' + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          let productsHTML = `
+            <div class="data-table">
+              <h3>Top 5 Rated Products:</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Product ID</th>
+                    <th>Product Name</th>
+                    <th>Supplier</th>
+                    <th>Rating</th>
+                  </tr>
+                </thead>
+                <tbody>
+          `;
+          
+          if (data.highest_rated_products.length === 0) {
+            productsHTML += `
+              <tr>
+                <td colspan="5" style="text-align: center;">No rated products found</td>
+              </tr>
+            `;
+          } else {
+            data.highest_rated_products.forEach((product, index) => {
+              productsHTML += `
+                <tr>
+                  <td>${index + 1}</td>
+                  <td>${product.Product_ID}</td>
+                  <td>${product.Product_Name}</td>
+                  <td>${product.Supplier_Name}</td>
+                  <td>${formatRating(product.Avg_Rating)}</td>
+                </tr>
+              `;
+            });
+          }
+          
+          productsHTML += `
+                </tbody>
+              </table>
+            </div>
+          `;
+          
+          document.getElementById("output").innerHTML = productsHTML;
+        } else {
+          document.getElementById("output").innerHTML = `
+            <div class="error-msg">
+              <p>Error: ${data.message}</p>
+            </div>
+          `;
+        }
+      })
+      .catch(error => {
+        document.getElementById("output").innerHTML = `
+          <div class="error-msg">
+            <p>Error: ${error}</p>
+          </div>
+        `;
+        console.error('Error:', error);
+      });
+    }
+
+    function fetchLowestRatedProducts() {
+      document.getElementById("output").innerHTML = "<p>Loading lowest rated products data...</p>";
+      
+      fetch('/get_lowest_rated_products')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Server responded with status: ' + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          let productsHTML = `
+            <div class="data-table">
+              <h3>Lowest 5 Rated Products:</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Product ID</th>
+                    <th>Product Name</th>
+                    <th>Supplier</th>
+                    <th>Rating</th>
+                  </tr>
+                </thead>
+                <tbody>
+          `;
+          
+          if (data.lowest_rated_products.length === 0) {
+            productsHTML += `
+              <tr>
+                <td colspan="5" style="text-align: center;">No rated products found</td>
+              </tr>
+            `;
+          } else {
+            data.lowest_rated_products.forEach((product, index) => {
+              productsHTML += `
+                <tr>
+                  <td>${index + 1}</td>
+                  <td>${product.Product_ID}</td>
+                  <td>${product.Product_Name}</td>
+                  <td>${product.Supplier_Name}</td>
+                  <td>${formatRating(product.Avg_Rating)}</td>
+                </tr>
+              `;
+            });
+          }
+          
+          productsHTML += `
+                </tbody>
+              </table>
+            </div>
+          `;
+          
+          document.getElementById("output").innerHTML = productsHTML;
+        } else {
+          document.getElementById("output").innerHTML = `
+            <div class="error-msg">
+              <p>Error: ${data.message}</p>
+            </div>
+          `;
+        }
+      })
+      .catch(error => {
+        document.getElementById("output").innerHTML = `
+          <div class="error-msg">
+            <p>Error: ${error}</p>
+          </div>
+        `;
+        console.error('Error:', error);
+      });
+    }
+
+    function fetchCustomersMembership() {
+      document.getElementById("output").innerHTML = "<p>Loading membership data...</p>";
+      
+      fetch('/get_customers_with_membership')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Server responded with status: ' + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          let customersHTML = `
+            <div class="data-table">
+              <h3>Customers with Membership:</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Customer ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Gender</th>
+                  </tr>
+                </thead>
+                <tbody>
+          `;
+          
+          if (data.customers_with_membership.length === 0) {
+            customersHTML += `
+              <tr>
+                <td colspan="5" style="text-align: center;">No customers with membership found</td>
+              </tr>
+            `;
+          } else {
+            data.customers_with_membership.forEach((customer, index) => {
+              customersHTML += `
+                <tr>
+                  <td>${index + 1}</td>
+                  <td>${customer.Customer_ID}</td>
+                  <td>${customer.Name}</td>
+                  <td>${customer.Email_ID}</td>
+                  <td>${customer.GENDER}</td>
+                </tr>
+              `;
+            });
+          }
+          
+          customersHTML += `
+                </tbody>
+              </table>
+            </div>
+          `;
+          
+          document.getElementById("output").innerHTML = customersHTML;
+        } else {
+          document.getElementById("output").innerHTML = `
+            <div class="error-msg">
+              <p>Error: ${data.message}</p>
+            </div>
+          `;
+        }
+      })
+      .catch(error => {
+        document.getElementById("output").innerHTML = `
+          <div class="error-msg">
+            <p>Error: ${error}</p>
+          </div>
+        `;
+        console.error('Error:', error);
+      });
+    }
+  </script>
+</body>
+</html>

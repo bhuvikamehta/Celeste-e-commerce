@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<link href="https://fonts.googleapis.com/css2?family=Allura&family=Playfair+Display&display=swap" rel="stylesheet">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Editable Profile Page</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='pr.css') }}" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="banner">
+    <div class="banner-content">
+      <span class="brand-name">Celesté</span>
+      <img src="{{ url_for('static', filename='logo2-Photoroom.png') }}" alt="Celeste Logo" class="brand-logo">
+    </div>
+  </div>
+  
+  <div class="container">
+    <div class="profile-wrapper">
+      <div class="profile-header">
+        <h1>My Profile</h1>
+        <button class="edit-btn" id="toggleEditBtn">
+          <i data-lucide="pencil"></i>
+        </button>
+      </div>
+      
+      <!-- Display Mode -->
+      <div class="profile-card" id="displayMode">
+        <div class="profile-item">
+          <span class="label">Name</span>
+          <span class="value" id="dispName">{{ user.Name }}</span>
+        </div>
+        <div class="profile-item">
+          <span class="label">Email ID</span>
+          <span class="value" id="dispEmail">{{ user.Email_ID }}</span>
+        </div>
+        <div class="profile-item">
+          <span class="label">Phone Number</span>
+          <span class="value" id="dispPhone">{{ user.Phone_Number }}</span>
+        </div>
+        <div class="profile-item">
+          <span class="label">Gender</span>
+          <span class="value" id="dispGender">{{ user.Gender }}</span>
+        </div>
+        <div class="profile-item">
+          <span class="label">Address</span>
+          <span class="value" id="dispAddress">{{ user.Address }}</span>
+        </div>
+        <div class="profile-item">
+          <span class="label">Date of Birth</span>
+          <span class="value" id="dispDob">{{ user.Date_of_Birth }}</span>
+         
+        </div>
+        <div class="profile-item">
+          <span class="label">Membership Status</span>
+          <span class="value" id="dispMembership">{% if user.Membership %}Active{% else %}Inactive{% endif %}
+          </span>
+        </div>
+      </div>
+
+      <!-- Edit Mode -->
+      <form class="profile-card hidden" id="editMode" method="POST" action="{{ url_for('update_profile') }}">
+        <div class="profile-item">
+          <span class="label">Name</span>
+          <input type="text" name="name" value="{{ user.Name }}" />
+        </div>
+        <div class="profile-item">
+          <span class="label">Email ID</span>
+          <input type="email" name="email" value="{{ user.Email_ID }}" />
+        </div>
+        <div class="profile-item">
+          <span class="label">Phone Number</span>
+          <input type="text" name="phone" value="{{ user.Phone_Number }}" />
+        </div>
+        <div class="profile-item">
+          <span class="label">Gender</span>
+          <input type="text" name="gender" value="{{ user.Gender }}" />
+        </div>
+        <div class="profile-item">
+          <span class="label">Address</span>
+          <input type="text" name="address" value="{{ user.Address }}" />
+        </div>
+        <div class="profile-item">
+          <span class="label">Date of Birth</span>
+          <input type="date" name="dob" value="{{ user.Date_of_Birth }}" />
+        </div>
+        <div class="profile-item">
+          <span class="label">Membership Status</span>
+          <input type="text" name="membership" value="{% if user.Membership %}Active{% else %}Inactive{% endif %}" />
+        </div>
+        <div style="text-align: right; margin-top: 16px;">
+          <button type="submit" class="edit-btn">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    const toggleBtn = document.getElementById('toggleEditBtn');
+    const displayMode = document.getElementById('displayMode');
+    const editMode = document.getElementById('editMode');
+
+    toggleBtn.addEventListener('click', () => {
+      displayMode.classList.toggle('hidden');
+      editMode.classList.toggle('hidden');
+    });
+
+    // Optional: Update the display values after saving
+    // editMode.addEventListener('submit', (e) => {
+    //   e.preventDefault();
+    //   const form = e.target;
+
+    //   document.getElementById('dispName').textContent = form.name.value;
+    //   document.getElementById('dispEmail').textContent = form.email.value;
+    //   document.getElementById('dispPhone').textContent = form.phone.value;
+    //   document.getElementById('dispGender').textContent = form.gender.value;
+    //   document.getElementById('dispAddress').textContent = form.address.value;
+    //   document.getElementById('dispDob').textContent = form.dob.value;
+    //   document.getElementById('dispMembership').textContent = form.membership.value;
+
+    //   displayMode.classList.remove('hidden');
+    //   editMode.classList.add('hidden');
+    // });
+  </script>
+</body>
+</html>

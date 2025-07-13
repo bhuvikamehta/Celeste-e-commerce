@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Celesté</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='homepage_style.css') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+<header>
+    <div class="logo">
+        <a href="{{ url_for('homepage') }}">
+            <span class="brand-name">Celesté</span>
+            <img src="{{ url_for('static', filename='logo2-Photoroom.png') }}" alt="Logo" class="logo-img" />
+        </a>
+    </div>
+
+    <div class="header-right">
+        <input type="search" placeholder="Search..." class="extended-search" />
+        <div class="profile-icon" onclick="toggleProfilePopup()">
+            <i class="fas fa-user icon"></i>
+        </div>
+        <div class="cart-icon">
+            <a href="{{ url_for('cart') }}">
+                <i class="fas fa-shopping-cart icon"></i>
+            </a>
+        </div>
+    </div>
+</header>
+
+<!-- Profile Popup (initially hidden) -->
+<div id="profilePopup" class="profile-popup">
+    <div class="popup-content">
+        <span class="close-btn" onclick="toggleProfilePopup()">&times;</span>
+        <ul class="profile-menu">
+            <li><a href="{{ url_for('profile') }}">My Account</a></li>
+            <li><a href="{{ url_for('past_orders') }}">Orders</a></li>
+            <li><a href="{{ url_for('landing') }}">Logout</a></li>
+        </ul>
+    </div>
+</div>
+
+<section class="hero">
+    <div class="hero-section">
+        <a href="{{ url_for('homepage') }}">
+            <img src="static/womenglasses1.jpg" alt="Women">
+            <h2>Women</h2>
+        </a>
+    </div>
+    <div class="hero-section">
+        <a href="{{ url_for('homepage') }}">
+            <img src="static/menbag1.jpg" alt="Men">
+            <h2>Men</h2>
+        </a>
+    </div>
+</section>
+
+<section>
+    <h2 class="section-title">Best Selling Items</h2>
+    <div class="product-grid">
+      {% for product in best_selling %}
+    <div class="product">
+        <a href="{{ url_for('product_info', product_id=product['Product_ID']) }}" style="text-decoration: none; color: inherit;">
+            {% if 'Bag' in product['Product_Name'] or 'Backpack' in product['Product_Name'] %}
+                {% set loc = '/static/bag2.jpg' %}
+            {% elif 'Sunglasses' in product['Product_Name'] %}
+                {% set loc = '/static/sunglasses2.jpg' %}
+            {% else %}
+                {% set loc = '/static/watch3.jpg' %}
+            {% endif %}
+            <img src="{{ loc }}" />
+            <p>{{ product['Product_Name'] }}</p>
+        </a>
+    </div>
+{% endfor %}
+        
+    </div>
+</section>
+
+<section>
+    <h2 class="section-title">Shop by Category</h2>
+    <div class="categories">
+        <div class="category">
+            <a href="{{ url_for('show_prod', category='WATCH') }}" style="text-decoration: none; color: inherit;">
+                <img src="static/watch7.jpg" alt="Watches" />
+                <p>Watches</p>
+            </a>
+        </div>
+        <div class="category">
+            <a href="{{ url_for('show_prod', category='BAG') }}" style="text-decoration: none; color: inherit;">
+                <img src="static/bag4.jpg" alt="Bags" />
+                <p>Bags</p>
+            </a>
+        </div>
+        <div class="category">
+            <a href="{{ url_for('show_prod', category='SUNGLASS') }}" style="text-decoration: none; color: inherit;">
+                <img src="static/sunglasses3.jpg" alt="Sunglasses" />
+                <p>Sunglasses</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-columns">
+        <div class="footer-column">
+            <p>Customer Service</p>
+            <p>Contact Us</p>
+            <p>Payment</p>
+            <p>Shipping</p>
+            <p>Returns & Exchanges</p>
+        </div>
+        <div class="footer-column">
+            <p>About Us</p>
+            <p>Sustainability</p>
+            <p>Press & Events</p>
+            <p>Careers</p>
+            <p>Investor Relations</p>
+        </div>
+        <div class="footer-column">
+            <p><strong>Follow us on</strong></p>
+            <div class="social-icons">
+                <img src="static/linkedin.png" alt="LinkedIn" />
+                <img src="static/fb.png" alt="Facebook" />
+                <img src="static/insta.png" alt="Instagram" />
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>Terms of Use | Privacy Policy </p>
+        <p>© 2006-2025 Celesté</p>
+    </div>
+</footer>
+
+<script src="static/homepage_script.js"></script>
+</body>
+</html>

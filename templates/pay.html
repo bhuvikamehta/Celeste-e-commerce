@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Payment Confirmation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Playfair Display', serif;
+      background: #fcf8f7;
+      padding: 30px;
+      margin: 0;
+    }
+
+    .container {
+      background: #ffffff;
+      max-width: 600px;
+      margin: auto;
+      padding: 30px 25px;
+      border-radius: 15px;
+      border: 2px solid #18392b;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    h2 {
+      text-align: center;
+      color: #18392b;
+      margin-bottom: 30px;
+      font-size: 32px;
+    }
+
+    .section {
+      margin-bottom: 25px;
+    }
+
+    .section h4 {
+      margin-bottom: 8px;
+      color: #18392b;
+      font-size: 18px;
+    }
+
+    .section ul {
+      padding-left: 20px;
+      color: #333;
+    }
+
+    .section p {
+      color: #333;
+      margin: 0;
+    }
+
+    .section strong {
+      color: #18392b;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      margin-top: 20px;
+    }
+
+    .buttons button {
+      padding: 12px 24px;
+      font-size: 16px;
+      border: 2px solid #18392b;
+      border-radius: 8px;
+      background-color: #ffffff;
+      color: #18392b;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .buttons button:hover {
+      background-color: #18392b;
+      color: #ffffff;
+    }
+
+    .message {
+      text-align: center;
+      margin-top: 25px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #18392b;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Payment Confirmation</h2>
+
+    <div class="section">
+      <h4>Items Ordered:</h4>
+      <ul>
+        {% for item in cart_items %}
+          <li>{{ item.Product_Name }} – ₹{{ item.Price * item.Quantity }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    
+    <div class="section">
+      <h4>Shipping Address:</h4>
+      <p>{{ address }}</p>
+    </div>
+    
+    <div class="section">
+      <h4>Total Amount:</h4>
+      <p><strong>₹{{ total_amount }}</strong></p>
+    </div>
+    
+
+    <!-- <div class="section">
+      <h4> Confirm Payment?</h4>
+      <div class="buttons">
+        <button onclick="confirmPayment(true)">Yes</button>
+        <button onclick="confirmPayment(false)">No</button>
+      </div>
+    </div> -->
+
+    <form action="{{ url_for('confirm_payment') }}" method="POST">
+      <div class="section">
+        <h4>Confirm Payment?</h4>
+        <div class="buttons">
+          <button type="submit" name="confirm" value="yes">Yes</button>
+          <button type="submit" name="confirm" value="no">No</button>
+        </div>
+      </div>
+    </form>
+
+    <div id="confirmation-message" class="message"></div>
+    
+    <div style="text-align: center; margin-top: 20px;">
+      <a href="{{ url_for('homepage') }}">
+        <button>Go to Home</button>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    function confirmPayment(confirm) {
+      const msg = document.getElementById("confirmation-message");
+      if (confirm) {
+        msg.textContent = "✅ Payment Confirmed. Thank you for your order!";
+      } else {
+        msg.textContent = "❌ Payment Cancelled.";
+      }
+    }
+  </script>
+</body>
+</html>
